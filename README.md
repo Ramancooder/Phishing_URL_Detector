@@ -1,3 +1,4 @@
+# Phishing_URL_Detector
 # PhishGuard — URL Security Scanner
 
 An educational cybersecurity project that analyzes URL text for common suspicious indicators and explains the findings in a Flask web interface.
