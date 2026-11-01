@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhishGuard | URL Security Scanner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="shield">◆</span> PhishGuard</a>
+    <span class="tag">URL SECURITY SCANNER</span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow">CYBERSECURITY • URL ANALYSIS</div>
+      <h1>Check a link before<br><span>you trust it.</span></h1>
+      <p class="subtitle">Analyze URL structure and common phishing indicators. PhishGuard provides a risk assessment—not a guarantee that a website is safe or malicious.</p>
+    </section>
+
+    <section class="scan-card">
+      <form method="post" action="{{ url_for('index') }}">
+        <label for="url">URL to analyze</label>
+        <div class="input-row">
+          <input id="url" name="url" type="text" placeholder="https://example.com/login" value="{{ url_value }}" maxlength="4000" required autocomplete="off" spellcheck="false">
+          <button type="submit">Analyze URL <span aria-hidden="true">→</span></button>
+        </div>
+        <p class="hint">Tip: paste a URL as text. This tool does not open or visit the submitted website.</p>
+      </form>
+      {% if error %}
+        <div class="error" role="alert">{{ error }}</div>
+      {% endif %}
+    </section>
+
+    {% if report %}
+    <section class="results" aria-live="polite">
+      <div class="result-heading">
+        <div>
+          <div class="eyebrow">SCAN REPORT</div>
+          <h2>Analysis results</h2>
+        </div>
+        <span class="badge badge-{{ report.risk_level|lower|replace(' ', '-') }}">{{ report.risk_level }}</span>
+      </div>
+      <div class="score-layout">
+        <div class="score-box">
+          <div class="score">{{ report.risk_score }}<small>/100</small></div>
+          <div class="score-label">Heuristic indicator score</div>
+          <div class="meter"><span style="width: {{ report.risk_score }}%"></span></div>
+        </div>
+        <div class="summary">
+          <strong>Assessment</strong>
+          <p>{{ report.summary }}</p>
+          <p class="fineprint">This score is a rule-based heuristic, not a calibrated probability.</p>
+        </div>
+      </div>
+      <div class="details-grid">
+        <div class="detail"><span>Hostname</span><strong>{{ report.hostname }}</strong></div>
+        <div class="detail"><span>Best-effort registered domain</span><strong>{{ report.registered_domain }}</strong></div>
+        <div class="detail"><span>Scheme</span><strong>{{ report.scheme|upper }}</strong></div>
+        <div class="detail"><span>Path</span><strong class="path">{{ report.path }}</strong></div>
+      </div>
+      <h3>Security indicators <span class="count">{{ report.finding_count }}</span></h3>
+      {% if report.findings %}
+        <div class="finding-list">
+          {% for finding in report.findings %}
+          <article class="finding">
+            <span class="finding-mark severity-{{ finding.severity }}">!</span>
+            <div><strong>{{ finding.title }}</strong><p>{{ finding.detail }}</p></div>
+          </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="clean-state"><span>✓</span><div><strong>No configured warning signs found</strong><p>This is not proof that the website is safe. These checks have limited coverage.</p></div></div>
+      {% endif %}
+      <div class="notice"><strong>Safety note:</strong> PhishGuard analyzes the URL text only. It does not verify website content, TLS certificates, DNS records, redirects, or live threat reputation.</div>
+    </section>
+    {% endif %}
+
+    <section class="how-it-works">
+      <div class="eyebrow">HOW IT WORKS</div>
+      <h2>Signals, not assumptions.</h2>
+      <div class="steps">
+        <div><span>01</span><h3>Parse</h3><p>Read the scheme, hostname, port, and path.</p></div>
+        <div><span>02</span><h3>Inspect</h3><p>Check configured URL and domain risk indicators.</p></div>
+        <div><span>03</span><h3>Explain</h3><p>Show the findings behind the heuristic score.</p></div>
+      </div>
+    </section>
+    <footer>PhishGuard • Educational cybersecurity training project • Use as a supporting signal, not a security guarantee.</footer>
+  </main>
+</body>
+</html>
